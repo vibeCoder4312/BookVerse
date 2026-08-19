@@ -1,0 +1,117 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(20, 22, 43, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  height: 68px;
+}
+
+.navbar__logo {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.navbar__logo span {
+  color: var(--color-accent);
+}
+
+.navbar__links {
+  display: flex;
+  gap: var(--space-5);
+  flex: 1;
+}
+
+.navbar__links a {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  transition: color 0.2s var(--ease);
+}
+
+.navbar__links a:hover {
+  color: var(--color-accent);
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.navbar__search {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  width: 220px;
+}
+
+.navbar__search::placeholder {
+  color: var(--color-text-faint);
+}
+
+.navbar__login {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-bg);
+  background: var(--color-accent);
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .navbar__links,
+  .navbar__search {
+    display: none;
+  }
+}
+
+.navbar__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.navbar__username {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.navbar__logout {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.navbar__logout:hover {
+  color: var(--color-rose);
+  border-color: var(--color-rose);
+}
+
+.navbar__quicklink {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  transition: color 0.2s var(--ease);
+}
+
+.navbar__quicklink:hover {
+  color: var(--color-accent);
+}

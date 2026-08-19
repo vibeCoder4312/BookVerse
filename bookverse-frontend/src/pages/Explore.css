@@ -1,0 +1,40 @@
+.explore {
+  padding: var(--space-6) 0 var(--space-8);
+}
+
+.explore h1 {
+  font-size: 2rem;
+  margin-bottom: var(--space-5);
+}
+
+.explore__filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.explore__filters label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.explore__filters select {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+.explore__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: var(--space-5);
+}
+
+.explore__empty {
+  font-style: italic;
+  color: var(--color-text-faint);
+}

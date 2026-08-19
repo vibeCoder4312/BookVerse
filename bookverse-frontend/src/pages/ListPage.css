@@ -1,0 +1,22 @@
+.list-page {
+  padding: var(--space-6) 0 var(--space-8);
+}
+
+.list-page h1 {
+  font-size: 2rem;
+  margin-bottom: var(--space-5);
+}
+
+.list-page__status {
+  color: var(--color-text-muted);
+}
+
+.list-page__section {
+  margin-bottom: var(--space-7);
+}
+
+.list-page__section h2 {
+  font-size: 1.2rem;
+  margin-bottom: var(--space-4);
+  color: var(--color-text);
+}

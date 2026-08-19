@@ -1,0 +1,118 @@
+.book-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 170px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  overflow: visible;
+  transition: transform 0.25s var(--ease);
+}
+
+/* The signature interaction: the card lifts toward the light on hover,
+   like pulling a book slightly off a shelf. */
+.book-card:hover {
+  transform: translateY(-8px);
+}
+
+.book-card__spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 12px;
+  width: 4px;
+  border-radius: 4px 0 0 4px;
+  z-index: 1;
+}
+
+.book-card__cover {
+  height: 240px;
+  border-radius: var(--radius-md);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.25s var(--ease);
+}
+
+.book-card:hover .book-card__cover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--color-accent-soft), 0 0 24px var(--color-accent-glow);
+}
+
+.book-card__cover-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-text);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.book-card__fav {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(20, 22, 43, 0.55);
+  color: var(--color-text);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.book-card__fav.is-active {
+  color: var(--color-rose);
+}
+
+.book-card__fav:hover {
+  transform: scale(1.1);
+}
+
+.book-card__body {
+  padding: var(--space-2) var(--space-1);
+}
+
+.book-card__type {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin: 0 0 4px 0;
+}
+
+.book-card__title {
+  font-size: 0.95rem;
+  color: var(--color-text);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-card__author {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-card__meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-faint);
+}
+
+.book-card__rating {
+  color: var(--color-accent);
+}
