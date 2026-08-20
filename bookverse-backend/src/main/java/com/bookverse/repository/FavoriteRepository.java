@@ -12,4 +12,8 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     Optional<Favorite> findByUserAndBook(User user, Book book);
     boolean existsByUserAndBook(User user, Book book);
     void deleteByUserAndBook(User user, Book book);
+
+    // Spring Data JPA walks the relationship (Favorite -> Book -> id)
+    // from the method name alone, same trick we used for reviews in Phase 9.
+    long countByBookId(Long bookId);
 }

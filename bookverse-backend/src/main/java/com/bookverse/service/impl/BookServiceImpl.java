@@ -42,6 +42,14 @@ public class BookServiceImpl implements BookService {
     public BookResponseDTO getBookById(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+
+        // Every view of a book's details page counts toward its Popular
+        // and Trending scores (Phase 10). This is a simple increment-and-save -
+        // fine at our scale, though a high-traffic site would batch these
+        // instead of writing to the DB on every single page view.
+        book.setViews(book.getViews() + 1);
+        bookRepository.save(book);
+
         return bookMapper.toResponseDTO(book);
     }
 

@@ -3,6 +3,7 @@ package com.bookverse.controller;
 import com.bookverse.dto.BookRequestDTO;
 import com.bookverse.dto.BookResponseDTO;
 import com.bookverse.service.BookService;
+import com.bookverse.service.DiscoveryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class BookController {
 
     private final BookService bookService;
+    private final DiscoveryService discoveryService;
 
     // Example call: GET /api/books?page=0&size=20&sortBy=title&direction=asc
     // 'page' and 'size' control pagination. 'sortBy' picks which field to
@@ -86,5 +89,36 @@ public class BookController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(bookService.getBooksByCategory(categoryName, pageable));
+    }
+
+    // GET /api/books/trending?size=10
+    @GetMapping("/trending")
+    public ResponseEntity<List<BookResponseDTO>> getTrending(@RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(discoveryService.getTrending(size));
+    }
+
+    // GET /api/books/popular?size=10
+    @GetMapping("/popular")
+    public ResponseEntity<List<BookResponseDTO>> getPopular(@RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(discoveryService.getPopular(size));
+    }
+
+    // GET /api/books/recent?size=10
+    // Technically just GET /api/books?sortBy=createdAt&direction=desc
+    // underneath - this dedicated endpoint exists purely so the frontend
+    // (and anyone testing the API) doesn't need to remember those params.
+    @GetMapping("/recent")
+    public ResponseEntity<List<BookResponseDTO>> getRecentlyAdded(@RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(0, size, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(bookService.getAllBooks(pageable).getContent());
+    }
+
+    // GET /api/books/3/similar?size=6
+    @GetMapping("/{id}/similar")
+    public ResponseEntity<List<BookResponseDTO>> getSimilarBooks(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        return ResponseEntity.ok(discoveryService.getSimilarBooks(id, size));
     }
 }

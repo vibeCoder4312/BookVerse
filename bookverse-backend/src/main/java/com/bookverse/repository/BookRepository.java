@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.util.List;
+import java.util.Set;
 
 // Notice this interface has no implementation body for these methods,
 // yet they work. Spring Data JPA either:
@@ -27,4 +29,27 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             "LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(a.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Book> searchByTitleOrAuthor(@Param("keyword") String keyword, Pageable pageable);
+
+    // "Similar books" for a details page: anything sharing at least one
+    // category with this book, excluding the book itself. DISTINCT matters
+    // here - a book sharing TWO categories with the original would
+    // otherwise show up twice in the join results.
+    @Query("SELECT DISTINCT b FROM Book b JOIN b.categories c " +
+            "WHERE c.name IN :categoryNames AND b.id <> :excludeBookId")
+    List<Book> findSimilarByCategories(
+            @Param("categoryNames") Set<String> categoryNames,
+            @Param("excludeBookId") Long excludeBookId,
+            Pageable pageable
+    );
+
+    // Recommendations: same idea, but excludes a whole SET of book ids
+    // (everything the user already favorited/added to their library),
+    // not just one book.
+    @Query("SELECT DISTINCT b FROM Book b JOIN b.categories c " +
+            "WHERE c.name IN :categoryNames AND b.id NOT IN :excludeIds")
+    List<Book> findRecommendedByCategories(
+            @Param("categoryNames") Set<String> categoryNames,
+            @Param("excludeIds") Set<Long> excludeIds,
+            Pageable pageable
+    );
 }
