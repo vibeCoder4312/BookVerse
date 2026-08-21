@@ -48,6 +48,13 @@ public class User {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    // Lets an admin disable a user's account (Phase 11) without deleting
+    // their data/history. UserDetailsServiceImpl reads this to reject
+    // login attempts from disabled accounts automatically.
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean enabled = true;
+
     @PrePersist
     // This method runs automatically right before Hibernate INSERTs this
     // row for the first time - a clean way to auto-stamp the creation time

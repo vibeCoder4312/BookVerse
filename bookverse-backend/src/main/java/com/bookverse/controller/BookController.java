@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -49,12 +50,18 @@ public class BookController {
     // @Valid triggers all the @NotBlank/@NotNull/etc checks we wrote on
     // BookRequestDTO. If any fail, Spring throws MethodArgumentNotValidException
     // BEFORE this method body even runs - our GlobalExceptionHandler catches it.
+    // @PreAuthorize runs BEFORE the method body - if the currently logged-in
+    // user doesn't have ROLE_ADMIN, Spring Security throws an
+    // AccessDeniedException immediately (which our GlobalExceptionHandler
+    // turns into a clean 403), and this method's code never even runs.
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<BookResponseDTO> createBook(@Valid @RequestBody BookRequestDTO dto) {
         BookResponseDTO created = bookService.createBook(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<BookResponseDTO> updateBook(
             @PathVariable Long id,
@@ -63,6 +70,7 @@ public class BookController {
         return ResponseEntity.ok(bookService.updateBook(id, dto));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);

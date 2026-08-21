@@ -80,6 +80,11 @@ public class DataSeeder implements CommandLineRunner {
                         .build()
         );
 
+        // --- Phase 12: the full 500+ book catalog ---
+        // Generated programmatically (word-bank combinations), not typed
+        // out by hand - see SeedDataGenerator.java for how it works.
+        SeedDataGenerator.generate(authorRepository, categoryRepository, bookRepository);
+
         // --- A test user ---
         // Password is now properly BCrypt-hashed via passwordEncoder, so you
         // can actually log in with these credentials once Phase 7 is wired up:
@@ -94,6 +99,6 @@ public class DataSeeder implements CommandLineRunner {
                         .build()
         );
 
-        System.out.println("Seed data inserted successfully!");
+        System.out.println("Seed data inserted successfully! Total books: " + bookRepository.count());
     }
 }

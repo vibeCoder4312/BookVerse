@@ -34,6 +34,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .withUsername(user.getEmail())
                 .password(user.getPassword()) // already BCrypt-hashed
                 .authorities(List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())))
+                // .disabled(true) makes Spring Security reject the login
+                // attempt automatically with "account disabled" - we don't
+                // have to write that check ourselves anywhere else.
+                .disabled(!user.getEnabled())
                 .build();
     }
 }

@@ -1,6 +1,7 @@
 package com.bookverse.repository;
 
 import com.bookverse.entity.Book;
+import com.bookverse.entity.ContentType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -52,4 +53,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             @Param("excludeIds") Set<Long> excludeIds,
             Pageable pageable
     );
+
+    // Used by the Admin Dashboard's stat cards (Total Manga, Total Comics, etc.)
+    long countByContentType(ContentType contentType);
 }
