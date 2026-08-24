@@ -23,4 +23,8 @@ public class BookResponseDTO {
     private Double averageRating; // null if the book has no reviews yet
     private Long reviewCount;
     private LocalDateTime createdAt;
+
+    // Populated only for books that have readable text (Phase 14).
+    // Frontend uses this to decide whether to show a "Read" button at all.
+    private String content;
 }

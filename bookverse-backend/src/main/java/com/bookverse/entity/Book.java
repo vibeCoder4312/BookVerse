@@ -49,6 +49,13 @@ public class Book {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    // Full/preview readable text for the "Read" feature (Phase 14).
+    // Nullable - most books in our catalog are metadata-only (Phase 12's
+    // generated placeholder data); only a couple of demo books have this
+    // populated with actual sample text.
+    @Column(columnDefinition = "TEXT")
+    private String content;
+
     // This is the OWNING side of the many-to-many with Category.
     // @JoinTable explicitly defines the join table "book_categories":
     //   - joinColumns: the column pointing back to THIS entity (Book)

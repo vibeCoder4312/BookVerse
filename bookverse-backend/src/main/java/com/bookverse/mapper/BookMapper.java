@@ -45,6 +45,7 @@ public class BookMapper {
                 .averageRating(avgRating != null ? Math.round(avgRating * 10.0) / 10.0 : null)
                 .reviewCount(reviewCount)
                 .createdAt(book.getCreatedAt())
+                .content(book.getContent())
                 .build();
     }
 }
