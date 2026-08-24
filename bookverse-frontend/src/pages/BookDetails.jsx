@@ -1,15 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { fetchBookById } from "../services/bookService";
-import {
-  addFavorite,
-  removeFavorite,
-  addOrUpdateLibraryEntry,
-  recordHistoryView,
-  fetchFavorites,
-  fetchLibrary,
-} from "../services/libraryService.js";
+import { addFavorite, removeFavorite, addOrUpdateLibraryEntry, recordHistoryView } from "../services/libraryService";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 import { mapApiBook } from "../utils/mapBook";
 import "./BookDetails.css";
 
@@ -17,6 +11,7 @@ function BookDetails() {
   const { id } = useParams();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { success, error: showError } = useToast();
 
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,28 +27,8 @@ function BookDetails() {
         const data = await fetchBookById(id);
         setBook(mapApiBook(data));
 
-        // Only logged-in users get a reading history - this call is
-        // "fire and forget": we don't await UI state on it, a failure
-        // here shouldn't block the user from viewing the page.
         if (isAuthenticated) {
           recordHistoryView(id).catch((err) => console.error("Failed to record history", err));
-
-          // Check whether this book is already favorited / in library,
-          // so the buttons reflect real saved state instead of always
-          // starting as false.
-          try {
-            const [favorites, library] = await Promise.all([fetchFavorites(), fetchLibrary()]);
-
-            const matchesBook = (item) => {
-              const itemId = item.bookId ?? item.id ?? item.book?.id;
-              return String(itemId) === String(id);
-            };
-
-            setIsFavorite(favorites.some(matchesBook));
-            setInLibrary(library.some(matchesBook));
-          } catch (err) {
-            console.error("Failed to load favorite/library status", err);
-          }
         }
       } catch (err) {
         if (err.response?.status === 404) {
@@ -74,15 +49,11 @@ function BookDetails() {
     setIsFavorite(next);
     try {
       next ? await addFavorite(id) : await removeFavorite(id);
+      success(next ? "Added to favorites" : "Removed from favorites");
     } catch (err) {
-      if (err.response?.status === 409) {
-        // Already exists server-side - keep UI as favorited rather
-        // than reverting.
-        setIsFavorite(true);
-      } else {
-        console.error(err);
-        setIsFavorite(!next);
-      }
+      console.error(err);
+      setIsFavorite(!next);
+      showError("Couldn't update favorites - please try again");
     }
   }
 
@@ -91,17 +62,24 @@ function BookDetails() {
     try {
       await addOrUpdateLibraryEntry(id, "SAVED");
       setInLibrary(true);
+      success("Added to your library");
     } catch (err) {
-      if (err.response?.status === 409) {
-        setInLibrary(true);
-      } else {
-        console.error(err);
-      }
+      console.error(err);
+      showError("Couldn't add to library - please try again");
     }
   }
 
   if (loading) {
-    return <div className="page-container book-details__missing"><p>Loading...</p></div>;
+    return (
+      <div className="page-container book-details">
+        <div className="book-details__cover book-details__cover--skeleton" />
+        <div className="book-details__info">
+          <div className="book-details__skeleton-line" style={{ width: "30%" }} />
+          <div className="book-details__skeleton-line" style={{ width: "60%", height: "2rem" }} />
+          <div className="book-details__skeleton-line" style={{ width: "40%" }} />
+        </div>
+      </div>
+    );
   }
 
   if (notFound || !book) {
@@ -134,7 +112,12 @@ function BookDetails() {
         </div>
 
         <div className="book-details__actions">
-          <button className="btn btn--primary" onClick={handleAddToLibrary} disabled={inLibrary}>
+          {book.hasContent && (
+            <Link to={`/books/${id}/read`} className="btn btn--primary">
+              📖 Read
+            </Link>
+          )}
+          <button className="btn btn--ghost" onClick={handleAddToLibrary} disabled={inLibrary}>
             {inLibrary ? "In Your Library" : "Add to Library"}
           </button>
           <button className="btn btn--ghost" onClick={handleFavoriteToggle}>

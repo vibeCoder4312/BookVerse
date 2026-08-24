@@ -24,8 +24,16 @@ export function mapApiBook(apiBook) {
     author: apiBook.author?.name ?? "Unknown Author",
     contentType: apiBook.contentType,
     genres,
-    rating: null, // reviews/ratings arrive in Phase 9
+    // FIXED: this was hardcoded to null since Phase 6, before the backend
+    // even calculated ratings. Phase 9 added averageRating/reviewCount to
+    // the API, but nothing here was ever updated to actually read it.
+    rating: apiBook.averageRating ?? null,
+    reviewCount: apiBook.reviewCount ?? 0,
     year: apiBook.publicationYear,
     spineColor: colorFor(genres[0] ?? apiBook.contentType ?? apiBook.title),
+    // Phase 14: lets BookDetails decide whether to show a "Read" button,
+    // without needing to ship the (potentially long) full text everywhere
+    // this shape is used.
+    hasContent: Boolean(apiBook.content),
   };
 }

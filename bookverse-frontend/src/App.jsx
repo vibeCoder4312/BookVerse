@@ -4,7 +4,9 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
+import Search from "./pages/Search";
 import BookDetails from "./pages/BookDetails";
+import Read from "./pages/Read";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
@@ -21,7 +23,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/search" element={<Search />} />
           <Route path="/books/:id" element={<BookDetails />} />
+          <Route path="/books/:id/read" element={<Read />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
 

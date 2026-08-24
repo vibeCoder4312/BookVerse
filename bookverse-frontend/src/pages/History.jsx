@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchHistory } from "../services/libraryService.js";
+import { fetchHistory } from "../services/libraryService";
 import { mapApiBook } from "../utils/mapBook";
 import BookGrid from "../components/BookGrid";
 import "./ListPage.css";
@@ -18,11 +18,7 @@ function History() {
   return (
     <div className="page-container list-page">
       <h1>Reading History</h1>
-      {loading ? (
-        <p className="list-page__status">Loading...</p>
-      ) : (
-        <BookGrid books={books} emptyMessage="You haven't opened any books yet." />
-      )}
+      <BookGrid books={books} loading={loading} emptyMessage="You haven't opened any books yet." />
     </div>
   );
 }

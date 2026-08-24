@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { addFavorite, removeFavorite } from "../services/libraryService.js";
+import { useToast } from "../context/ToastContext";
+import { addFavorite, removeFavorite } from "../services/libraryService";
 import "./BookCard.css";
 
 // `favorited` is an OPTIONAL prop - pages that already know a book's
@@ -11,6 +12,7 @@ import "./BookCard.css";
 function BookCard({ book, favorited = false }) {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { success, error: showError } = useToast();
 
   const [isFavorite, setIsFavorite] = useState(favorited);
   const [saving, setSaving] = useState(false);
@@ -38,16 +40,15 @@ function BookCard({ book, favorited = false }) {
     try {
       if (nextValue) {
         await addFavorite(book.id);
+        success(`Added "${book.title}" to favorites`);
       } else {
         await removeFavorite(book.id);
+        success(`Removed "${book.title}" from favorites`);
       }
     } catch (err) {
-      if (err.response?.status === 409) {
-        // Already exists server-side - keep it favorited instead of reverting
-      } else {
-        console.error("Failed to update favorite", err);
-        setIsFavorite(!nextValue); // roll back on failure
-      }
+      console.error("Failed to update favorite", err);
+      setIsFavorite(!nextValue); // roll back on failure
+      showError("Couldn't update favorites - please try again");
     } finally {
       setSaving(false);
     }

@@ -1,0 +1,41 @@
+.book-card-skeleton {
+  width: 170px;
+  flex-shrink: 0;
+}
+
+.book-card-skeleton__cover {
+  height: 240px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  margin-bottom: var(--space-2);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.book-card-skeleton__line {
+  height: 10px;
+  border-radius: 4px;
+  background: var(--color-surface);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+  margin-bottom: 6px;
+}
+
+.book-card-skeleton__line--title {
+  width: 80%;
+}
+
+.book-card-skeleton__line--author {
+  width: 55%;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-card-skeleton__cover,
+  .book-card-skeleton__line {
+    animation: none;
+    opacity: 0.7;
+  }
+}
