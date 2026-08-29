@@ -5,35 +5,24 @@ import com.bookverse.repository.AuthorRepository;
 import com.bookverse.repository.BookRepository;
 import com.bookverse.repository.CategoryRepository;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 /**
  * Generates BookVerse's full ~565-book catalog by COMBINING word banks
  * (adjectives + nouns, topics + templates) instead of hand-writing every
- * title. This is what the project spec asks for explicitly: a clean
- * generation strategy instead of 500+ manual INSERT statements.
+ * title. See Phase 12 for the original design rationale - unchanged here.
  *
- * How it works, at a glance:
- *  - Fiction-ish genres (Fantasy, Romance, Mystery, ...): adjective + noun
- *    combos, e.g. "Forgotten" + "Throne" -> "The Forgotten Throne"
- *  - Nonfiction (Self Improvement, Psychology, ...): a template like
- *    "The Art of {topic}" combined with subject topics
- *  - Study/tech (Programming, Computer Science, ...): templates like
- *    "Introduction to {topic}" combined with real subject-matter terms
- *  - Manga/Manhwa/Manhua/Comics/Graphic Novels/Light Novels: original
- *    adjective + noun combos in a different, more "series"-flavored word
- *    bank, with a volume number appended
- *  - Children's: animal + activity combos
- *
- * All titles here are ORIGINAL (invented by combining generic words) -
- * nothing is copied from any real book, so there's no copyright concern.
+ * PRICE FEATURE UPDATE: every generated book now gets a real BigDecimal
+ * price via priceFor(contentType, index), varied per content type (study
+ * textbooks cost more than manga volumes) with per-book variation so
+ * books of the same type aren't all identically priced.
  */
 public class SeedDataGenerator {
 
     private static final Random RANDOM = new Random(42); // fixed seed = reproducible runs
 
-    // A shared pool of author names, reused across books - realistic,
-    // since real authors write multiple books too.
     private static final String[] FIRST_NAMES = {
             "Aiden", "Sophia", "Ethan", "Olivia", "Liam", "Emma", "Noah", "Ava",
             "Mason", "Isabella", "Lucas", "Mia", "Henry", "Charlotte", "Owen",
@@ -102,6 +91,36 @@ public class SeedDataGenerator {
     );
 
     // ============================================================
+    // PRICE ASSIGNMENT (new)
+    // ============================================================
+
+    // Base price ranges per content type, in rupees - roughly reflects
+    // real-world pricing patterns (textbooks cost more than manga volumes).
+    private static final Map<ContentType, int[]> PRICE_RANGE_BY_TYPE = Map.of(
+            ContentType.NOVEL, new int[]{249, 499},
+            ContentType.BOOK, new int[]{299, 599},
+            ContentType.STUDY_BOOK, new int[]{399, 899},
+            ContentType.MANGA, new int[]{149, 299},
+            ContentType.MANHWA, new int[]{149, 299},
+            ContentType.MANHUA, new int[]{149, 299},
+            ContentType.COMIC, new int[]{199, 399},
+            ContentType.GRAPHIC_NOVEL, new int[]{299, 599},
+            ContentType.LIGHT_NOVEL, new int[]{249, 449},
+            ContentType.CHILDRENS_BOOK, new int[]{149, 349}
+    );
+
+    // Deterministically varies the price within that content type's range
+    // based on the book's index - same seed, same run, always produces the
+    // same prices, so restarting the seeder gives consistent demo data
+    // rather than different prices every time.
+    private static BigDecimal priceFor(ContentType contentType, int index) {
+        int[] range = PRICE_RANGE_BY_TYPE.getOrDefault(contentType, new int[]{199, 399});
+        int span = range[1] - range[0];
+        int price = range[0] + ((index * 37) % (span + 1)); // 37 = arbitrary fixed spread multiplier
+        return BigDecimal.valueOf(price).setScale(2, RoundingMode.UNNECESSARY);
+    }
+
+    // ============================================================
     // GROUP 1: FICTION - adjective + noun, flavored per genre
     // ============================================================
 
@@ -144,6 +163,7 @@ public class SeedDataGenerator {
                     .contentType(spec.contentType())
                     .publicationYear(1950 + ((i * 7 + spec.name().hashCode()) % 75))
                     .categories(new HashSet<>(Set.of(category)))
+                    .price(priceFor(spec.contentType(), i))
                     .build());
         }
         return books;
@@ -184,6 +204,7 @@ public class SeedDataGenerator {
                         .contentType(spec.contentType())
                         .publicationYear(1980 + ((i * 5) % 45))
                         .categories(new HashSet<>(Set.of(category)))
+                        .price(priceFor(spec.contentType(), i))
                         .build());
             }
             return books;
@@ -202,6 +223,7 @@ public class SeedDataGenerator {
                     .contentType(spec.contentType())
                     .publicationYear(1980 + ((i * 6 + spec.name().hashCode()) % 45))
                     .categories(new HashSet<>(Set.of(category)))
+                    .price(priceFor(spec.contentType(), i))
                     .build());
         }
         return books;
@@ -239,6 +261,7 @@ public class SeedDataGenerator {
                     .contentType(spec.contentType())
                     .publicationYear(1995 + ((i * 4 + spec.name().hashCode()) % 30))
                     .categories(new HashSet<>(Set.of(category)))
+                    .price(priceFor(spec.contentType(), i))
                     .build());
         }
         return books;
@@ -274,6 +297,7 @@ public class SeedDataGenerator {
                     .contentType(spec.contentType())
                     .publicationYear(1990 + ((i * 3 + spec.name().hashCode()) % 35))
                     .categories(new HashSet<>(Set.of(category)))
+                    .price(priceFor(spec.contentType(), i))
                     .build());
         }
         return books;
@@ -304,6 +328,7 @@ public class SeedDataGenerator {
                     .contentType(spec.contentType())
                     .publicationYear(1995 + (i * 2) % 30)
                     .categories(new HashSet<>(Set.of(category)))
+                    .price(priceFor(spec.contentType(), i))
                     .build());
         }
         return books;
@@ -324,9 +349,6 @@ public class SeedDataGenerator {
         return authorRepository.saveAll(pool);
     }
 
-    // Deterministically picks an author based on the title's hash - this
-    // spreads books across the author pool in a repeatable (not random-
-    // looking-different-every-run) way, since RANDOM has a fixed seed anyway.
     private static Author pickAuthor(List<Author> authorPool, String title) {
         int index = Math.abs(title.hashCode()) % authorPool.size();
         return authorPool.get(index);

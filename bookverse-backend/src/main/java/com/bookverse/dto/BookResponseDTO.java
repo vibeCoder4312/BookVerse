@@ -2,6 +2,7 @@ package com.bookverse.dto;
 
 import com.bookverse.entity.ContentType;
 import lombok.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -23,8 +24,6 @@ public class BookResponseDTO {
     private Double averageRating; // null if the book has no reviews yet
     private Long reviewCount;
     private LocalDateTime createdAt;
-
-    // Populated only for books that have readable text (Phase 14).
-    // Frontend uses this to decide whether to show a "Read" button at all.
     private String content;
+    private BigDecimal price; // NEW - real per-book price for the Buy Physical Copy feature
 }

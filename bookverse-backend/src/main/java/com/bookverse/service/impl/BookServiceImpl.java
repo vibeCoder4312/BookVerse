@@ -19,8 +19,6 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-// @Service marks this as a Spring-managed bean holding business logic -
-// the same Dependency Injection idea we saw with DataSeeder in Phase 3.
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
@@ -32,9 +30,6 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Page<BookResponseDTO> getAllBooks(Pageable pageable) {
-        // .map() here converts a Page<Book> into a Page<BookResponseDTO>
-        // by running our mapper on every element, while keeping all the
-        // pagination metadata (total pages etc.) intact.
         return bookRepository.findAll(pageable).map(bookMapper::toResponseDTO);
     }
 
@@ -44,9 +39,7 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
 
         // Every view of a book's details page counts toward its Popular
-        // and Trending scores (Phase 10). This is a simple increment-and-save -
-        // fine at our scale, though a high-traffic site would batch these
-        // instead of writing to the DB on every single page view.
+        // and Trending scores (Phase 10).
         book.setViews(book.getViews() + 1);
         bookRepository.save(book);
 
@@ -68,6 +61,7 @@ public class BookServiceImpl implements BookService {
                 .coverUrl(dto.getCoverUrl())
                 .publicationYear(dto.getPublicationYear())
                 .categories(categories)
+                .price(dto.getPrice()) // NEW
                 .build();
 
         Book saved = bookRepository.save(book);
@@ -89,6 +83,7 @@ public class BookServiceImpl implements BookService {
         book.setCoverUrl(dto.getCoverUrl());
         book.setPublicationYear(dto.getPublicationYear());
         book.setCategories(resolveCategories(dto.getCategoryIds()));
+        book.setPrice(dto.getPrice()); // NEW
 
         Book updated = bookRepository.save(book);
         return bookMapper.toResponseDTO(updated);
@@ -112,8 +107,6 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findByCategoryName(categoryName, pageable).map(bookMapper::toResponseDTO);
     }
 
-    // Small private helper - not part of the interface, just used
-    // internally to avoid repeating this logic in both create and update.
     private Set<Category> resolveCategories(Set<Long> categoryIds) {
         return categoryIds.stream()
                 .map(catId -> categoryRepository.findById(catId)

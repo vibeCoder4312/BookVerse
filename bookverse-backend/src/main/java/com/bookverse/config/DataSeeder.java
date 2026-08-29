@@ -7,19 +7,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
-// @Component tells Spring "create one instance of this and manage it".
-// Implementing CommandLineRunner means Spring will automatically call
-// run() once, right after the application finishes starting up.
-// This is a common beginner-friendly way to seed test data - later in
-// Phase 12 we'll replace this with a proper 500+ record seeding strategy.
 @Component
 @RequiredArgsConstructor
-// Lombok generates a constructor that takes all 'final' fields below
-// and assigns them - this is how Spring "injects" the repositories in,
-// a pattern called Dependency Injection. We never write "new UserRepository()"
-// ourselves; Spring hands us the ready-to-use instance automatically.
 public class DataSeeder implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -30,8 +22,6 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Guard clause: only seed if the books table is empty, so we
-        // don't insert duplicates every single time you restart the app.
         if (bookRepository.count() > 0) {
             System.out.println("Seed data already exists, skipping seeding.");
             return;
@@ -57,7 +47,7 @@ public class DataSeeder implements CommandLineRunner {
                         .build()
         );
 
-        // --- Books (this is where the relationships come together) ---
+        // --- Books (ids 1 and 2 - kept stable across all earlier phase tests) ---
         bookRepository.save(
                 Book.builder()
                         .title("The Hobbit")
@@ -65,7 +55,8 @@ public class DataSeeder implements CommandLineRunner {
                         .author(tolkien)
                         .contentType(ContentType.NOVEL)
                         .publicationYear(1937)
-                        .categories(Set.of(fantasy, adventure)) // many-to-many in action
+                        .categories(Set.of(fantasy, adventure))
+                        .price(new BigDecimal("349.00")) // NEW
                         .build()
         );
 
@@ -77,22 +68,20 @@ public class DataSeeder implements CommandLineRunner {
                         .contentType(ContentType.STUDY_BOOK)
                         .publicationYear(2008)
                         .categories(Set.of(programming))
+                        .price(new BigDecimal("599.00")) // NEW
                         .build()
         );
 
         // --- Phase 14: two demo books with actual readable content ---
-        // These titles and text are ORIGINAL, written for this project -
-        // not real published works, and not claimed to be public domain
-        // reproductions. This keeps the reading feature demonstrable
-        // without any copyright ambiguity.
         bookRepository.save(
                 Book.builder()
                         .title("A Quiet Morning in Maple Hollow")
                         .description("A gentle short story about a small village waking up to an unusual visitor.")
-                        .author(tolkien) // reusing an existing author for simplicity
+                        .author(tolkien)
                         .contentType(ContentType.NOVEL)
                         .publicationYear(2024)
                         .categories(Set.of(fantasy))
+                        .price(new BigDecimal("299.00")) // NEW
                         .content("""
                                 The mist over Maple Hollow lifted slowly that morning, the way it always \
                                 did when the seasons were about to turn. Elenor Ashby stood at her window, \
@@ -136,10 +125,11 @@ public class DataSeeder implements CommandLineRunner {
                 Book.builder()
                         .title("Notes from the Lighthouse")
                         .description("A quiet, atmospheric short story told through a lighthouse keeper's journal entries.")
-                        .author(martin) // reusing an existing author for simplicity
+                        .author(martin)
                         .contentType(ContentType.NOVEL)
                         .publicationYear(2023)
                         .categories(Set.of(fantasy))
+                        .price(new BigDecimal("299.00")) // NEW
                         .content("""
                                 Entry the first.
 
@@ -184,15 +174,11 @@ public class DataSeeder implements CommandLineRunner {
         );
 
         // --- Phase 12: the full 500+ book catalog ---
-        // Generated programmatically (word-bank combinations), not typed
-        // out by hand - see SeedDataGenerator.java for how it works.
+        // Generated programmatically (word-bank combinations), each with a
+        // real price assigned by SeedDataGenerator's priceFor() helper.
         SeedDataGenerator.generate(authorRepository, categoryRepository, bookRepository);
 
         // --- A test user ---
-        // Password is now properly BCrypt-hashed via passwordEncoder, so you
-        // can actually log in with these credentials once Phase 7 is wired up:
-        //   email: student@bookverse.com
-        //   password: Password123
         userRepository.save(
                 User.builder()
                         .name("Test Student")

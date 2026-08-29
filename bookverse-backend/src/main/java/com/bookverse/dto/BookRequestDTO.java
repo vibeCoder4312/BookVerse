@@ -3,6 +3,7 @@ package com.bookverse.dto;
 import com.bookverse.entity.ContentType;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Getter
@@ -13,9 +14,6 @@ import java.util.Set;
 public class BookRequestDTO {
 
     @NotBlank(message = "Title is required")
-    // @NotBlank checks the string is not null AND not just whitespace.
-    // If this fails, Spring Boot automatically returns a 400 Bad Request
-    // with a message - we don't have to write that check ourselves.
     private String title;
 
     private String description;
@@ -33,4 +31,11 @@ public class BookRequestDTO {
 
     @NotEmpty(message = "At least one category is required")
     private Set<Long> categoryIds;
+
+    // NEW: required so every book created/edited through the admin API
+    // has a real price - @DecimalMin prevents accidentally saving a
+    // negative or zero price through a typo.
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "1.00", message = "Price must be at least ₹1.00")
+    private BigDecimal price;
 }

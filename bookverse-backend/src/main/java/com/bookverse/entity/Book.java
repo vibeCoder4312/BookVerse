@@ -2,8 +2,8 @@ package com.bookverse.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,9 +26,6 @@ public class Book {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // @ManyToOne = the "many" side: many Books can share the same Author.
-    // @JoinColumn tells Hibernate to add an "author_id" foreign key
-    // column directly on the books table, pointing at authors.id.
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     private Author author;
@@ -50,17 +47,20 @@ public class Book {
     private LocalDateTime createdAt;
 
     // Full/preview readable text for the "Read" feature (Phase 14).
-    // Nullable - most books in our catalog are metadata-only (Phase 12's
-    // generated placeholder data); only a couple of demo books have this
-    // populated with actual sample text.
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    // This is the OWNING side of the many-to-many with Category.
-    // @JoinTable explicitly defines the join table "book_categories":
-    //   - joinColumns: the column pointing back to THIS entity (Book)
-    //   - inverseJoinColumns: the column pointing to the OTHER entity (Category)
-    // Hibernate creates and manages this join table for us automatically.
+    // NEW: price of a physical copy, in rupees. Used by the "Buy Physical
+    // Copy" WhatsApp order feature - previously this was guessed client-side
+    // from contentType alone (every Fantasy novel showing the same price),
+    // which wasn't realistic. Now every book has its own real price set
+    // by the admin (or by the seed generator for demo data).
+    // precision=10, scale=2 -> stores values like 1299.99 accurately;
+    // BigDecimal (not double/float) is used because floating-point binary
+    // types can introduce tiny rounding errors in currency math.
+    @Column(precision = 10, scale = 2)
+    private BigDecimal price;
+
     @ManyToMany
     @JoinTable(
             name = "book_categories",
@@ -69,8 +69,6 @@ public class Book {
     )
     @Builder.Default
     private Set<Category> categories = new HashSet<>();
-    // Using a Set (not List) here prevents accidentally adding the
-    // same category to a book twice.
 
     @PrePersist
     protected void onCreate() {
