@@ -12,9 +12,7 @@ function colorFor(seed) {
 }
 
 // Converts a BookResponseDTO (from Spring Boot) into the flatter shape
-// our components (BookCard, BookDetails) already expect. This is the
-// ONLY place that needs to change if the backend's response shape
-// ever changes - every component stays untouched.
+// our components (BookCard, BookDetails) already expect.
 export function mapApiBook(apiBook) {
   const genres = apiBook.categories ? Array.from(apiBook.categories) : [];
   return {
@@ -24,16 +22,14 @@ export function mapApiBook(apiBook) {
     author: apiBook.author?.name ?? "Unknown Author",
     contentType: apiBook.contentType,
     genres,
-    // FIXED: this was hardcoded to null since Phase 6, before the backend
-    // even calculated ratings. Phase 9 added averageRating/reviewCount to
-    // the API, but nothing here was ever updated to actually read it.
     rating: apiBook.averageRating ?? null,
     reviewCount: apiBook.reviewCount ?? 0,
     year: apiBook.publicationYear,
     spineColor: colorFor(genres[0] ?? apiBook.contentType ?? apiBook.title),
-    // Phase 14: lets BookDetails decide whether to show a "Read" button,
-    // without needing to ship the (potentially long) full text everywhere
-    // this shape is used.
     hasContent: Boolean(apiBook.content),
+    // NEW: real per-book price from the backend (a BigDecimal, arrives as
+    // a JSON number). Null for any book seeded before this field existed -
+    // components fall back to a content-type-based default in that case.
+    price: apiBook.price ?? null,
   };
 }

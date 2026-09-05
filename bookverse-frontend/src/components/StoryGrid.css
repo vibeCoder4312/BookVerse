@@ -1,0 +1,11 @@
+.story-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-5);
+}
+
+.story-grid__empty {
+  font-style: italic;
+  color: var(--color-text-faint);
+  padding: var(--space-4) 0;
+}

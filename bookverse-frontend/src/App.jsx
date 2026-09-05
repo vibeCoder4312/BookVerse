@@ -13,6 +13,10 @@ import Profile from "./pages/Profile";
 import Library from "./pages/Library";
 import Favorites from "./pages/Favorites";
 import History from "./pages/History";
+import ListenStoriesHome from "./pages/ListenStoriesHome";
+import StorySearch from "./pages/StorySearch";
+import StoryCategoryPage from "./pages/StoryCategoryPage";
+import StoryDetail from "./pages/StoryDetail";
 
 function App() {
   return (
@@ -28,11 +32,6 @@ function App() {
           <Route path="/books/:id/read" element={<Read />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-
-          {/* Wrapping the element in <ProtectedRoute> means visiting
-              /profile while logged out redirects straight to /login,
-              instead of rendering a page that would crash on user.name
-              being undefined. */}
           <Route
             path="/profile"
             element={
@@ -65,6 +64,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Listen Stories - all public for now (browsing doesn't need
+              login; favoriting/progress-tracking in later phases will
+              individually guard those specific actions, same pattern as
+              the book domain's favorite/library buttons). */}
+          <Route path="/listen-stories" element={<ListenStoriesHome />} />
+          <Route path="/listen-stories/search" element={<StorySearch />} />
+          <Route path="/listen-stories/category/:categoryName" element={<StoryCategoryPage />} />
+          <Route path="/listen-stories/:id" element={<StoryDetail />} />
         </Routes>
       </main>
 

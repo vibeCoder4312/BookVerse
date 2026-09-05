@@ -1,0 +1,165 @@
+.stories-hero {
+  position: relative;
+  padding: var(--space-8) 0 var(--space-7);
+  overflow: hidden;
+  background: linear-gradient(180deg, #1a0f2e 0%, var(--color-bg) 100%);
+}
+
+.stories-hero__glow {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 500px;
+  background: radial-gradient(ellipse at center, rgba(111, 66, 193, 0.35), transparent 70%);
+  pointer-events: none;
+}
+
+.stories-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+}
+
+.stories-hero__kicker {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+}
+
+.stories-hero h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  max-width: 640px;
+  background: linear-gradient(135deg, #f5f1e8, #c9b8ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.stories-hero__sub {
+  font-size: 1.05rem;
+  max-width: 460px;
+}
+
+.stories-hero__search {
+  margin-top: var(--space-3);
+  display: flex;
+  width: min(520px, 100%);
+  gap: var(--space-2);
+}
+
+.stories-hero__search input {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.stories-hero__search input::placeholder {
+  color: var(--color-text-faint);
+}
+
+.stories-hero__search button {
+  padding: 0 24px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.stories-hero__cta {
+  margin-top: var(--space-4);
+  padding: 14px 32px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-accent);
+  color: #2b1a00;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: transform 0.2s var(--ease);
+}
+
+.stories-hero__cta:hover {
+  transform: translateY(-2px);
+}
+
+/* Original, CSS-only "equalizer bars" motif - no external image asset,
+   purely decorative, evokes an audio waveform without depicting anything
+   copyrightable. */
+.stories-hero__bars {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  height: 40px;
+  margin-top: var(--space-6);
+  opacity: 0.5;
+}
+
+.stories-hero__bars span {
+  display: block;
+  width: 4px;
+  height: 12px;
+  background: var(--color-accent);
+  border-radius: 2px;
+  animation: bar-bounce 1.2s ease-in-out infinite;
+}
+
+@keyframes bar-bounce {
+  0%, 100% { height: 8px; }
+  50% { height: 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stories-hero__bars span {
+    animation: none;
+    height: 16px;
+  }
+}
+
+.stories-categories {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: var(--space-5) 0;
+  scrollbar-width: thin;
+}
+
+.stories-categories__chip {
+  flex-shrink: 0;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.stories-categories__chip:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.stories-home__status {
+  padding: var(--space-6) 0;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.stories-home__status--error {
+  color: var(--color-rose);
+}

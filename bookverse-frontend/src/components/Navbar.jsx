@@ -16,10 +16,6 @@ function Navbar() {
     navigate("/");
   }
 
-  // A <form>'s onSubmit fires both on Enter-key-press AND on tapping a
-  // mobile keyboard's "search" button - handling both with one function
-  // is exactly why we wrap the search input in a form instead of just
-  // listening for onKeyDown on the input alone.
   function handleSearchSubmit(event) {
     event.preventDefault();
     const trimmed = searchValue.trim();
@@ -44,6 +40,7 @@ function Navbar() {
           <Link to="/explore">Explore</Link>
           <Link to="/study">Study</Link>
           <Link to="/manga">Manga & Comics</Link>
+          <Link to="/listen-stories">🎧 Listen Stories</Link>
         </nav>
 
         <div className="navbar__actions">
@@ -68,9 +65,6 @@ function Navbar() {
             <Link to="/login" className="navbar__login">Login</Link>
           )}
 
-          {/* Hamburger button - only visible below 900px via CSS.
-              aria-expanded tells screen readers whether the menu is
-              currently open, same idea as a native <details> element. */}
           <button
             className="navbar__hamburger"
             onClick={() => setMobileMenuOpen((open) => !open)}
@@ -84,9 +78,6 @@ function Navbar() {
         </div>
       </div>
 
-      {/* The mobile dropdown - only rendered/shown when open, and only
-          visible at all below 900px (desktop users never see this,
-          since navbar__links already covers them). */}
       {mobileMenuOpen && (
         <div className="navbar__mobile-menu">
           <form className="navbar__search-form navbar__search-form--mobile" onSubmit={handleSearchSubmit}>
@@ -102,6 +93,7 @@ function Navbar() {
           <Link to="/explore" onClick={closeMobileMenu}>Explore</Link>
           <Link to="/study" onClick={closeMobileMenu}>Study</Link>
           <Link to="/manga" onClick={closeMobileMenu}>Manga & Comics</Link>
+          <Link to="/listen-stories" onClick={closeMobileMenu}>🎧 Listen Stories</Link>
           {isAuthenticated ? (
             <>
               <Link to="/library" onClick={closeMobileMenu}>My Library</Link>
